@@ -90,14 +90,15 @@ WSGI_APPLICATION = 'rhizome.wsgi.application'
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 
+## FIXME - why isn't the .env file working here..
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST'),
-        'PORT': os.getenv('POSTGRES_PORT')
+        'NAME': os.getenv('POSTGRES_DB', 'rhizome'),
+        'USER': 'djangoapp', ## os.getenv('POSTGRES_USER' 'djangoapp'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'w3b@p01i0'),
+        'HOST': os.getenv('POSTGRES_HOST', 'psqlserver'),
+        'PORT': os.getenv('POSTGRES_PORT', '5432')
     }
 }
 

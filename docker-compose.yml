@@ -2,7 +2,7 @@ rhizome:
   restart: always
   build: .
   links:
-    - db:db
+    - db
   expose:
     - 9090
   ports:
@@ -26,15 +26,15 @@ db:
   env_file:
     - .env
 
-fe:
-  restart: always
-  build: webapp
-  volumes:
-    - ./webapp:/code
-    - ./webapp/src:/watcher-app/src
-    - ./webapp/public/static:/watcher-app/public/static
-    - ./webapp/gulpfile.babel.js:/watcher-app/gulpfile.babel.js
-  working_dir: /watcher-app
-  env_file:
-    - .env
-  command: gulp dev
+# fe:
+#   restart: always
+#   build: webapp
+#   volumes:
+#     - ./webapp:/code
+#     - ./webapp/src:/watcher-app/src
+#     - ./webapp/public/static:/watcher-app/public/static
+#     - ./webapp/gulpfile.babel.js:/watcher-app/gulpfile.babel.js
+#   working_dir: /watcher-app
+#   env_file:
+#     - .env
+#   command: gulp dev
