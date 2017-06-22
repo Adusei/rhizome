@@ -1,5 +1,0 @@
-Chart Builder
-=============
-
-bla bla
--------

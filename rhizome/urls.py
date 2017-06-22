@@ -23,34 +23,15 @@ admin.autodiscover()
 
 v1_api = Api(api_name='v1')
 
-v1_api.register(agg_refresh.AggRefreshResource())
-v1_api.register(cache_meta.CacheMetaResource())
-v1_api.register(
-    calculated_indicator_component.CalculatedIndicatorComponentResource())
-v1_api.register(custom_chart.CustomChartResource())
-v1_api.register(custom_dashboard.CustomDashboardResource())
 v1_api.register(date_datapoint.DateDatapointResource())
 v1_api.register(doc_datapoint.DocDataPointResource())
 v1_api.register(doc_detail_type.DocDetailTypeResource())
 v1_api.register(doc_trans_form.DocTransFormResource())
 v1_api.register(document.DocumentResource())
 v1_api.register(document_detail.DocumentDetailResource())
-v1_api.register(geo.GeoResource())
-v1_api.register(group.GroupResource())
-v1_api.register(indicator.IndicatorResource())
-v1_api.register(indicator_tag.IndicatorTagResource())
-v1_api.register(indicator_to_tag.IndicatorToTagResource())
-v1_api.register(location_permission.LocationPermissionResource())
-v1_api.register(location.LocationResource())
-v1_api.register(location_type.LocationTypeResource())
-v1_api.register(queue_process.QueueProcessResource())
 v1_api.register(refresh_master.RefreshMasterResource())
 v1_api.register(source_object_map.SourceObjectMapResource())
 v1_api.register(source_submission.SourceSubmissionResource())
-v1_api.register(sync_odk.SyncOdkResource())
-v1_api.register(user_group.UserGroupResource())
-v1_api.register(user.UserResource())
-v1_api.register(all_meta.AllMetaResource())
 v1_api.register(date_doc_results.DateDocResultResource())
 
 protected_patterns = [
@@ -69,7 +50,6 @@ urlpatterns = patterns(
     '',
     url(r'^api/', include(v1_api.urls)),
 
-    url(r'^about$', views.about, name='about'),
     url(r'^admin/', decorator_include(login_required, admin.site.urls)),
     url(r'^accounts/login/$', login, name='login'),
     url(r'^accounts/logout/$', logout, name='logout'),

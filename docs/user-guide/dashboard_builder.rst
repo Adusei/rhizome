@@ -1,2 +1,0 @@
-Dashboard Builder User Guide
-============================

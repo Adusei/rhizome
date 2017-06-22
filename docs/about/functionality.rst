@@ -1,5 +1,0 @@
-Core Functionality
-==================
-
-User Stories
-------------

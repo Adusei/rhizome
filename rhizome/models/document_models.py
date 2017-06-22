@@ -232,7 +232,6 @@ class Document(models.Model):
 
         self.refresh_submission_details()
         self.submissions_to_doc_datapoints()
-        self.delete_unmapped()
         self.sync_datapoint()
 
     def get_document_config(self):
@@ -294,36 +293,6 @@ class Document(models.Model):
         source_map_dict = source_map_dict.to_dict()['master_object_id']
 
         return source_map_dict
-
-
-    def delete_unmapped(self):
-        '''
-        if a user re-maps data, we need to delete the
-        old data and make way for the new
-        '''
-
-        from rhizome.models.datapoint_models import DataPoint
-
-        som_data = SourceObjectMap.objects.filter(master_object_id__gt=0,
-              id__in=DocumentSourceObjectMap.objects
-              .filter(document_id=self.id)
-              .values_list('source_object_map_id', flat=True))\
-              .values_list('content_type', 'master_object_id')
-
-        som_lookup = defaultdict(list)
-
-        for content_type, master_object_id in som_data:
-            som_lookup[content_type].append(master_object_id)
-
-        ## delete bad_indicator_data ##
-        DataPoint.objects.filter(
-            source_submission_id__document_id=self.id,
-        ).exclude(indicator_id__in=som_lookup['indicator']).delete()
-
-        ## delete bad_location_data ##
-        DataPoint.objects.filter(
-            source_submission_id__document_id=self.id,
-        ).exclude(location_id__in=som_lookup['location']).delete()
 
     def refresh_submission_details(self):
         '''
@@ -526,15 +495,6 @@ class SourceObjectMap(models.Model):
         if self.master_object_id == -1:
             return super(SourceObjectMap, self).save(**kwargs)
 
-
-        if self.content_type == 'indicator':
-            self.master_object_name = Indicator.objects\
-                .get(id=self.master_object_id).short_name
-
-        if self.content_type == 'location':
-            self.master_object_name = Location.objects\
-                .get(id=self.master_object_id).name
-
         return super(SourceObjectMap, self).save(**kwargs)
 
 class DocumentSourceObjectMap(models.Model):
@@ -574,10 +534,6 @@ class SourceSubmission(models.Model):
     instance_guid = models.CharField(max_length=255)
     row_number = models.IntegerField()
     data_date = models.DateTimeField(null=True)
-    location_code = models.CharField(max_length=1000)
-    latitude = models.FloatField(null=True)
-    longitude = models.FloatField(null=True)
-    location_display = models.CharField(max_length=1000)
     submission_json = JSONField()
     created_at = models.DateTimeField(auto_now=True)
     process_status = models.CharField(max_length=25)  # should be a FK
@@ -586,9 +542,6 @@ class SourceSubmission(models.Model):
         db_table = 'source_submission'
         unique_together = (('document', 'instance_guid'))
 
-    def get_location_id(self):
-
-        return 1
 
 # Exceptions #
 class BadFileHeaderException(Exception):

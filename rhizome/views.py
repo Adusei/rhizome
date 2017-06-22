@@ -14,13 +14,6 @@ from rhizome.mixins import PermissionRequiredMixin
 
 from rhizome.pdf_utils import print_pdf
 
-
-def about(request):
-    html = settings.ABOUT_HTML
-    return render_to_response('about.html', {'html': html},
-                              context_instance=RequestContext(request))
-
-
 def export_file(request):
     file_type = request.GET['type']
     url = request.GET['path']
@@ -54,94 +47,18 @@ def export_file(request):
     response.set_cookie('fileDownloadToken', 'true')
     return response
 
-#############################################################################
-#                                  OPEN VIEWS                               #
-#             ( needs authentication, but no specific permissions )         #
-#############################################################################
-
-
-# RESOURCES
-#---------------------------------------------------------------------------
-def dashboards(request):
-    return render_to_response('dashboards/index.html',
-                              context_instance=RequestContext(request))
-
-
-def dashboard_create(request):
-    return render_to_response('dashboards/create.html',
-                              context_instance=RequestContext(request))
-
-
-def dashboard(request, dashboard_id=None):
-
-    try:
-        CustomDashboard.objects.get(id=dashboard_id)
-    except CustomDashboard.DoesNotExist:
-        return HttpResponseRedirect('/dashboards/create')
-
-    return render_to_response('dashboards/show.html', {'dashboard_id': dashboard_id},
-                              context_instance=RequestContext(request))
-
-
-def charts(request):
-    return render_to_response('charts/index.html',
-                              context_instance=RequestContext(request))
-
-
-def chart_create(request):
-    return render_to_response('charts/create.html',
-                              context_instance=RequestContext(request))
-
-
-def chart(request, chart_id=None):
-    return render_to_response('charts/show.html', {'chart_id': chart_id},
-                              context_instance=RequestContext(request))
-
-#############################################################################
-#                                                                           #
-#                              RESTRICTED VIEWS                             #
-#                                                                           #
-#############################################################################
-
-@user_passes_test(lambda u: u.groups.filter(name='chart_edit') or u.is_superuser,
-                  login_url='/permissions_needed', redirect_field_name=None)
-def chart_edit(request, chart_id=None):
-    return render_to_response('charts/show.html', {'chart_id': chart_id},
-                              context_instance=RequestContext(request))
-
-
-#----------------------------------------------------------------------------
-@user_passes_test(lambda u: u.groups.filter(name='react_app') or u.is_superuser,
-                  login_url='/permissions_needed', redirect_field_name=None)
-def react_app(request):
-    return render_to_response('react_app.html',\
-        context_instance=RequestContext(request))
-
-@user_passes_test(lambda u: u.groups.filter(name='data_entry') or u.is_superuser,
-                  login_url='/permissions_needed', redirect_field_name=None)
-def data_entry(request):
-    return render_to_response('data-entry/index.html',
-                              context_instance=RequestContext(request))
-
-
-@user_passes_test(lambda u: u.groups.filter(name='source-data') or u.is_superuser,
-                  login_url='/permissions_needed', redirect_field_name=None)
+# @user_passes_test(lambda u: u.groups.filter(name='source-data') or u.is_superuser,
+#                   login_url='/permissions_needed', redirect_field_name=None)
 def source_data(request):
     return render_to_response('source-data/index.html',
                               context_instance=RequestContext(request))
 
 
-@user_passes_test(lambda u: u.groups.filter(name='manage-system') or u.is_superuser,
-                  login_url='/permissions_needed', redirect_field_name=None)
-def manage_system(request):
-    return render_to_response('manage_system.html',
-                              context_instance=RequestContext(request))
-
-@user_passes_test(lambda u: u.groups.filter(name='manage-system') or u.is_superuser,
-                  login_url='/permissions_needed', redirect_field_name=None)
-def update_campaign(request):
-    return render_to_response('manage_system.html',
-        context_instance=RequestContext(request))
+# @user_passes_test(lambda u: u.groups.filter(name='manage-system') or u.is_superuser,
+#                   login_url='/permissions_needed', redirect_field_name=None)
+# def manage_system(request):
+#     return render_to_response('manage_system.html',
+#                               context_instance=RequestContext(request))
 
 class UserCreateView(PermissionRequiredMixin, generic.CreateView):
     model = User
