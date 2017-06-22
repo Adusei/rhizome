@@ -2,7 +2,6 @@ import React from 'react'
 import Router from 'react-router'
 
 import SimpleForm from 'components/organisms/manage-system/SimpleForm'
-import CampaignsContainer from 'containers/CampaignsContainer'
 
 var {Route, RouteHandler, Link} = Router
 var AdminApp = React.createClass({
@@ -32,7 +31,6 @@ var AdminApp = React.createClass({
 var routes = (
     <Route name='app' path='/manage_system/' handler={AdminApp}>
       <Route name='manage' path='/manage_system/manage/:contentType/:id?' handler={SimpleForm}/>
-      <Route name='updateCampaign' path='/campaign/:id?' handler={CampaignsContainer}/>
       <Route name='users' handler={require('components/organisms/manage-system/UsersAdmin')} />
       <Route name='locations' handler={require('components/organisms/manage-system/LocationAdmin')} />
       <Route name='campaigns' handler={require('components/organisms/manage-system/CampaignsAdmin')} />
