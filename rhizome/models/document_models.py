@@ -1,3 +1,4 @@
+import logging
 import hashlib
 import random
 import json
@@ -59,34 +60,40 @@ class Document(models.Model):
 
         ## FIXME - pull these from document detail as the user should be
         ## allowed to set these column configurations
-        self.location_column, self.uq_id_column, self.date_column, \
-        self.lat_column, self.lon_column = \
-            ['city', 'unique_key', 'data_date', 'latitude', 'longitude']
+        # self.location_column, self.uq_id_column, self.date_column, \
+        # self.lat_column, self.lon_column = \
+
+        #     ['city', 'unique_key', 'data_date', 'latitude', 'longitude']
 
         raw_csv_df = read_csv(settings.MEDIA_ROOT + str(self.docfile))
-
         csv_df = raw_csv_df.where((notnull(raw_csv_df)), None)
-        # if there is no uq id column -- make one #
-        if self.uq_id_column not in raw_csv_df.columns:
 
-            try:
-                csv_df[self.uq_id_column] = csv_df[self.location_column].map(
-                    str)
-            except Exception as err: ## FIXME # clean this
-                if self.date_column not in csv_df.columns:
-                    error_message = '%s is a required column.' % err.message
-                    raise Exception(error_message)
+        self.uq_id_column = 'row_number'
+        # if there is no uq id column -- make one #
+        # if self.uq_id_column not in raw_csv_df.columns:
+        #
+        #     try:
+        #         csv_df[self.uq_id_column] = csv_df[self.location_column].map(
+        #             str)
+        #     except Exception as err: ## FIXME # clean this
+        #         if self.date_column not in csv_df.columns:
+        #             error_message = '%s is a required column.' % err.message
+        #             raise Exception(error_message)
+        #
 
         self.csv_df = csv_df
+        self.csv_df[self.uq_id_column] = csv_df.index
         self.file_header = csv_df.columns
 
-        self.meta_lookup = {
-            'location': {},
-            'indicator': {}
-        }
-        self.indicator_ids_to_exclude = set([-1])
-        self.existing_submission_keys = SourceSubmission.objects.filter(
-            document_id=self.id).values_list('instance_guid', flat=True)
+        print csv_df[:5]
+
+        # self.meta_lookup = {
+        #     'location': {},
+        #     'indicator': {}
+        # }
+        # self.indicator_ids_to_exclude = set([-1])
+        # self.existing_submission_keys = SourceSubmission.objects.filter(
+        #     document_id=self.id).values_list('instance_guid', flat=True)
 
     def process_file(self):
         '''
@@ -109,7 +116,9 @@ class Document(models.Model):
             try:
                 ss, instance_guid = self.process_raw_source_submission(submission)
             except Exception as err:
+                print '====\n' *3
                 logging.warning(err.args)
+                print '====\n' *3
 
             if ss is not None and instance_guid is not None:
                 ss['instance_guid'] = instance_guid
@@ -143,7 +152,7 @@ class Document(models.Model):
 
         for row in source_dp_json:
             row_dict = json.loads(row[0])
-            rg_codes.append(row_dict[self.location_column])
+            # rg_codes.append(row_dict[self.location_column])
 
         for r in list(set(rg_codes)):
             all_codes.append(('location', r))
@@ -198,17 +207,14 @@ class Document(models.Model):
         submission_data = dict(zip(self.file_header, submission_data))
         instance_guid = submission_data[self.uq_id_column]
 
-        if instance_guid == '' or instance_guid in self.existing_submission_keys:
-            return None, None
-
         submission_dict = {
             'submission_json': submission_data,
             'document_id': self.id,
-            'data_date': parse(submission_data[self.date_column]),
+            # 'data_date': parse(submission_data[self.date_column]),
             'row_number': submission_ix,
-            'latitude': submission_data[self.lat_column] or 0, #FIXME make nullable in model
-            'longitude': submission_data[self.lon_column] or 0,  #FIXME make nullable in model
-            'location_code': submission_data[self.location_column],
+            'latitude': 0, # FIXME make nullable in model
+            'longitude': 0,  # FIXME make nullable in model
+            'location_code': 'x', # FIXME make nullable in model
             'instance_guid': submission_data[self.uq_id_column],
             'process_status': 'TO_PROCESS',
         }
@@ -375,8 +381,7 @@ class Document(models.Model):
 
     def add_unique_index(self, x):
 
-        x['unique_index'] = str(x['location_id']) + '_' + str(
-            x['indicator_id']) + '_' + str(to_datetime(x['data_date'], utc=True))
+        x['unique_index'] = 'x'
 
         return x
 
@@ -583,13 +588,7 @@ class SourceSubmission(models.Model):
 
     def get_location_id(self):
 
-        try:
-            l_id = SourceObjectMap.objects.get(content_type='location',
-                   source_object_code=self.location_code).master_object_id
-        except SourceObjectMap.DoesNotExist:
-            l_id = None
-
-        return l_id
+        return 1
 
 # Exceptions #
 class BadFileHeaderException(Exception):

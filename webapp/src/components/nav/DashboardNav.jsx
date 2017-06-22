@@ -74,14 +74,6 @@ let DashboardNav = React.createClass({
 
     return (
       <ul className='dashboards-nav'>
-        { charts_dropdown }
-        <li>
-          <a href='/dashboards'>Dashboards</a>
-          <ul className='dashboard-menu'>
-            { create_dashboard_button }
-            { custom_dashboards }
-          </ul>
-        </li>
         <li className='log-out'>
           <a href='/accounts/logout?next=/' title='logout'>
             Log Out &nbsp;

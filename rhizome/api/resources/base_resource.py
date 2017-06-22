@@ -131,13 +131,6 @@ class BaseResource(Resource):
         primary key requested
         """
 
-        try:
-            self.top_lvl_location_id = LocationPermission.objects.get(
-                user_id=request.user.id).top_lvl_location_id
-        except LocationPermission.DoesNotExist:
-            self.top_lvl_location_id = Location.objects\
-                .filter(parent_location_id=None)[0].id
-
         allowed_methods = getattr(
             self._meta, "%s_allowed_methods" % request_type, None)
 
