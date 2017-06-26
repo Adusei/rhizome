@@ -75,18 +75,12 @@ var SourceDataStore = Reflux.createStore({
         'fields': ['indicator__id', 'indicator__short_name', 'location__name', 'data_date', 'value'],
         'search_fields': ['indicator_id', 'indicator__short_name', 'location__name', 'campaign__name']
       },
-      'campaign_results': {
-        'data_fn': api.campaignDocResults,
-        'fields': ['indicator__id', 'indicator__short_name', 'location__name', 'campaign__name', 'value'],
-        'fields': ['indicator__id', 'indicator__short_name', 'location__name', 'campaign__name', 'value'],
-        'search_fields': ['indicator_id', 'indicator__short_name', 'location__name', 'campaign__name']
+      'errors': {
+        'data_fn': api.docToMap,
+        'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
+        'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
+        'search_fields': ['content_type', 'source_object_code', 'master_object_name']
       }
-      // 'errors': {
-      //   'data_fn': api.docMap,
-      //   'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-      //   'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-      //   'search_fields': ['content_type', 'source_object_code', 'master_object_name']
-      // }
     }
   }
 })

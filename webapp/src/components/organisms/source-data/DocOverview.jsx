@@ -101,15 +101,20 @@ var DocOverview = React.createClass({
         </div>)
     }
 
+    var buttonComponent = ''
+    if (this.props.doc_tabl === 'view_raw') {
+      buttonComponent = (
+          <a disabled={this.state.isRefreshing} className='button button-refresh'
+           onClick={this.refreshMaster}> <i className='fa fa-refresh'></i>{ this.state.isRefreshing ? 'Refreshing' : 'Transform Data'}
+          </a>
+      )
+    }
+
     var button_row = (
       <div className='row'>
         <div className='medium-3 columns'>
-          <a disabled={this.state.isRefreshing} className='button button-refresh'
-           onClick={this.refreshMaster}> <i className='fa fa-refresh'></i>{ this.state.isRefreshing ? 'Refreshing' : 'Refresh Master'}
-          </a>
-        </div>
-          <div className='medium-6 columns'>
-        </div>
+        {buttonComponent}
+      </div>
         <div className='medium-3 columns'>
           <DownloadButton
             onClick={this._download}
