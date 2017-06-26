@@ -4,7 +4,7 @@ build:
     environment:
       ENV: CI
     commands:
-      - echo "this is a python app  "
+      - echo "this is a python asfasfapp  "
     when:
       event:
         - push
