@@ -7,7 +7,7 @@ from pandas import DataFrame
 from tastypie.serializers import Serializer
 
 from rhizome.models.indicator_models import Indicator
-from rhizome.models.location_models import Location
+# from rhizome.models.location_models import Location
 
 class CustomJSONSerializer(Serializer):
     """Does not allow out of range float values
@@ -124,93 +124,93 @@ class CustomSerializer(Serializer):
     def to_urlencode(self, content):
         pass
 
-    def to_csv(self, data, options=None):
-        '''
-        First lookup the metadata (campaign, location, indicator) and build a map
-        cooresponding to id / name.  Afterwords iterate through the dataobjecst
-        passed, unpack the indicator objects and create a dataframe which gets
-        converted to a csv.
-        '''
-
-        # response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-
-        options = options or {}
-        data = self.to_simple(data, options)
-        data_objects = data['objects']
-
-        try:
-            meta_lookup = self.build_meta_lookup(data_objects)
-        except KeyError:
-            # a little bit of a hack, but this is the condition that for now
-            # alerts the system that this is a raw csv for a document_id.
-            submission_data = [row['submission_json'] for row in data_objects]
-            return self.clean_and_prep_csv(submission_data)
-
-        expanded_objects = []
-
-        for obj in data_objects:
-
-            expanded_obj = {}
-
-            expanded_obj['location'] = meta_lookup['location'][obj['location']]
-            expanded_obj['campaign'] = meta_lookup['campaign'][obj['campaign']]
-
-            for ind_dict in obj['indicators']:
-
-                indicator_string = meta_lookup['indicator'][
-                    int(ind_dict['indicator'])]
-
-                indicator_value = ind_dict['value']
-                expanded_obj[indicator_string] = indicator_value
-
-            expanded_objects.append(expanded_obj)
-
-        csv = self.clean_and_prep_csv(expanded_objects)
-
-        return csv
-
-    def clean_and_prep_csv(self, data_objects):
-
-        csv_df = DataFrame(data_objects)
-
-        ## rearrange column order ( POLIO-200 ) ##
-        ## http://stackoverflow.com/questions/13148429 ##
-        cols = csv_df.columns.tolist()
-        cols = cols[-2:] + cols[:-2]
-        csv_df = csv_df[cols]
-
-        csv = StringIO.StringIO(str(csv_df.to_csv(index=False)))
-
-        return csv
-
-    def build_meta_lookup(self, object_list):
-        '''
-        Instead of hitting the datbase every time you need to find the
-        string for a particular meta data item.. build a dictionary
-        once, store it in memory and access metadata values this way.
-
-        '''
-        # set up the lookup object
-        meta_lookup = {'location': {}, 'campaign': {}, 'indicator': {}}
-
-        # find the location and campaign ids from the object list
-        location_ids = [obj['location'] for obj in object_list]
-        campaign_ids = [obj['campaign'] for obj in object_list]
-
-        # every object has all indicators, so find the first one, and the IDs
-        # for each indicator in that object
-
-        indicator_nodes = [obj['indicators'] for obj in object_list]
-
-        indicator_ids = []
-        for ind in indicator_nodes:
-
-            indicator_ids.extend([i['indicator'] for i in ind])
-
-        for r in Location.objects.filter(id__in=location_ids):
-            meta_lookup['location'][r.id] = r.__unicode__()
-
-        for ind in Indicator.objects.filter(id__in=indicator_ids):
-            meta_lookup['indicator'][ind.id] = ind.__unicode__()
-
-        return meta_lookup
+    # def to_csv(self, data, options=None):
+    #     '''
+    #     First lookup the metadata (campaign, location, indicator) and build a map
+    #     cooresponding to id / name.  Afterwords iterate through the dataobjecst
+    #     passed, unpack the indicator objects and create a dataframe which gets
+    #     converted to a csv.
+    #     '''
+    #
+    #     # response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
+    #
+    #     options = options or {}
+    #     data = self.to_simple(data, options)
+    #     data_objects = data['objects']
+    #
+    #     try:
+    #         meta_lookup = self.build_meta_lookup(data_objects)
+    #     except KeyError:
+    #         # a little bit of a hack, but this is the condition that for now
+    #         # alerts the system that this is a raw csv for a document_id.
+    #         submission_data = [row['submission_json'] for row in data_objects]
+    #         return self.clean_and_prep_csv(submission_data)
+    #
+    #     expanded_objects = []
+    #
+    #     for obj in data_objects:
+    #
+    #         expanded_obj = {}
+    #
+    #         expanded_obj['location'] = meta_lookup['location'][obj['location']]
+    #         expanded_obj['campaign'] = meta_lookup['campaign'][obj['campaign']]
+    #
+    #         for ind_dict in obj['indicators']:
+    #
+    #             indicator_string = meta_lookup['indicator'][
+    #                 int(ind_dict['indicator'])]
+    #
+    #             indicator_value = ind_dict['value']
+    #             expanded_obj[indicator_string] = indicator_value
+    #
+    #         expanded_objects.append(expanded_obj)
+    #
+    #     csv = self.clean_and_prep_csv(expanded_objects)
+    #
+    #     return csv
+    #
+    # def clean_and_prep_csv(self, data_objects):
+    #
+    #     csv_df = DataFrame(data_objects)
+    #
+    #     ## rearrange column order ( POLIO-200 ) ##
+    #     ## http://stackoverflow.com/questions/13148429 ##
+    #     cols = csv_df.columns.tolist()
+    #     cols = cols[-2:] + cols[:-2]
+    #     csv_df = csv_df[cols]
+    #
+    #     csv = StringIO.StringIO(str(csv_df.to_csv(index=False)))
+    #
+    #     return csv
+    #
+    # def build_meta_lookup(self, object_list):
+    #     '''
+    #     Instead of hitting the datbase every time you need to find the
+    #     string for a particular meta data item.. build a dictionary
+    #     once, store it in memory and access metadata values this way.
+    #
+    #     '''
+    #     # set up the lookup object
+    #     meta_lookup = {'location': {}, 'campaign': {}, 'indicator': {}}
+    #
+    #     # find the location and campaign ids from the object list
+    #     location_ids = [obj['location'] for obj in object_list]
+    #     campaign_ids = [obj['campaign'] for obj in object_list]
+    #
+    #     # every object has all indicators, so find the first one, and the IDs
+    #     # for each indicator in that object
+    #
+    #     indicator_nodes = [obj['indicators'] for obj in object_list]
+    #
+    #     indicator_ids = []
+    #     for ind in indicator_nodes:
+    #
+    #         indicator_ids.extend([i['indicator'] for i in ind])
+    #
+    #     for r in Location.objects.filter(id__in=location_ids):
+    #         meta_lookup['location'][r.id] = r.__unicode__()
+    #
+    #     for ind in Indicator.objects.filter(id__in=indicator_ids):
+    #         meta_lookup['indicator'][ind.id] = ind.__unicode__()
+    #
+    #     return meta_lookup

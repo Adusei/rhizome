@@ -4,8 +4,8 @@ from pandas import notnull, DataFrame, concat
 
 from rhizome.models.indicator_models import Indicator, IndicatorToTag, \
     IndicatorBound
-from rhizome.models.location_models import Location, LocationTree, \
-    LocationType, LocationPolygon, MinGeo
+# from rhizome.models.location_models import Location, LocationTree, \
+#     LocationType, LocationPolygon, MinGeo
 
 class IndicatorCache(object):
     '''

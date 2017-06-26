@@ -18,8 +18,8 @@ from rhizome.api.custom_cache import CustomCache
 from rhizome.api.resources.base_resource import BaseResource
 from rhizome.api.exceptions import RhizomeApiException
 
-from rhizome.models.location_models import Location, LocationTree, \
-    LocationType
+# from rhizome.models.location_models import Location, LocationTree, \
+#     LocationType
 
 
 class BaseModelResource(ModelResource, BaseResource):

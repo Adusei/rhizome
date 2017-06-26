@@ -12,7 +12,7 @@ from rhizome.api.custom_session_authentication import CustomSessionAuthenticatio
 from rhizome.api.custom_cache import CustomCache
 from rhizome.api.exceptions import RhizomeApiException
 
-from rhizome.models.location_models import LocationPermission, Location
+# from rhizome.models.location_models import LocationPermission, Location
 
 class BaseResource(Resource):
     '''
@@ -172,7 +172,7 @@ class BaseResource(Resource):
 
         meta = {
             'get_params': request.GET,
-            'top_lvl_location_id': self.top_lvl_location_id,
+            'top_lvl_location_id': 1, ## self.top_lvl_location_id,
             'limit': None,  # paginator.get_limit(),
             'offset': None,  # paginator.get_offset(),
             'total_count': len(objects),
