@@ -236,17 +236,15 @@ class Document(models.Model):
 
         Linking is done in the source_object_map table.
 
-from rhizome.models.document_models import *
-d = Document.objects.get(id=3)
-d.sync_entity_data()
-
+        from rhizome.models.document_models import *
+        d = Document.objects.get(id=3)
+        d.sync_entity_data()
 
         """
         import logging
 
-        from pprint import pprint
-
-        ## these are the attribuets that define an entity 1-1
+        ## these are the attribuets that define an entity 1-1 ...
+        ## should be done in the DB and or use human intervention
         identity_map = {
             'Social Sec No': 'Person',
             'EIN': 'Organization'
@@ -269,19 +267,14 @@ d.sync_entity_data()
                 if entity_type:
                     entity_column_lookup[column_header] = entity_type
 
-        logging.warning('ENTITY COLUMN LOOKUP %s', entity_column_lookup)
 
         # for each row, for the "identity" fieds, create a row in source_object_map
         # where source_object_code == cell_value, content_type = 'entity' and
         # master id is null.  Make sure not to duplicate
 
-        logging.warning('self.file_header %s ', self.file_header)
-        logging.warning('TYPE self.file_header %s ', type(self.file_header))
-
-        # pprint(identity_map)
-        # then get the json of all of the related submissions .
         submission_qs = SourceSubmission.objects.filter(document_id=self.id)
 
+        som_entity_ids = []
         for submission in submission_qs:
 
             for column, entity_type in entity_column_lookup.iteritems():
@@ -295,8 +288,13 @@ d.sync_entity_data()
 
                     logging.warning('CREATED: %s', created)
                     logging.warning('SOM: %s', som)
+                    som_entity_ids.append(som.id)
 
-            # all_ss_ids.append(submission.id)
+        for som_id in som_entity_ids:
+            d_som, created = DocumentSourceObjectMap.objects.get_or_create(
+                document_id=self.id
+                ,source_object_map_id=som_id
+            )
 
     ### END ENTITY TRANSFORM ####
 

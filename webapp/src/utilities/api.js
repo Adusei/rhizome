@@ -376,6 +376,16 @@ function docToMap (q) {
   })
 }
 
+function docLink (q) {
+  var fetch = endPoint('/source_object_map/')
+  q['content_type'] = 'entity'
+  return new Promise(function (fulfill, reject) {
+    fetch(q, null, {'cache-control': 'no-cache'}).then(function (data) {
+      fulfill(data)
+    }, reject)
+  })
+}
+
 export default {
   endPoint,
   // CUSTOM GET REQUESTS -> MANIPULATED BY JS //
@@ -386,6 +396,7 @@ export default {
   buildIndicatorsTree: buildIndicatorsTree,
   docMapped: docMapped,
   docToMap: docToMap,
+  docLink: docLink,
 
   // june-27 //
   docError: endPoint('/document_error/', 'get', 1),

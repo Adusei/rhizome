@@ -64,7 +64,7 @@ var SourceDataStore = Reflux.createStore({
       },
       'link-entities': {
         'display_name': 'Link Entities',
-        'data_fn': api.docMapped,
+        'data_fn': api.docLink,
         'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
         'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
         'search_fields': ['content_type', 'source_object_code', 'master_object_name']

@@ -1,6 +1,8 @@
 from rhizome.api.resources.base_model import BaseModelResource
 from rhizome.models.document_models import SourceObjectMap, DocumentSourceObjectMap
 
+from tastypie.resources import ALL
+
 class SourceObjectMapResource(BaseModelResource):
     '''
     **GET Request** Returns all Source Object Maps
@@ -24,6 +26,7 @@ class SourceObjectMapResource(BaseModelResource):
         required_fields_for_post = ['id'] #['source_object_code', 'content_type']
         # bring back when REST resource fetch is handled properly in FE
         # GET_params_required = ['document_id'] FE
+        filtering = {'content_type': ALL}
 
     def apply_filters(self, request, applicable_filters):
         """
