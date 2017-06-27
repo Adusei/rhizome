@@ -58,9 +58,9 @@ var SourceDataStore = Reflux.createStore({
       'map-columns': {
         'display_name': 'Map Columns',
         'data_fn': api.docToMap,
-        'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-        'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-        'search_fields': ['content_type', 'source_object_code', 'master_object_name']
+        'fields': ['id', 'source_object_code', 'master_object_name', 'edit_link'],
+        'header': ['id', 'source_object_code', 'master_object_name', 'edit_link'],
+        'search_fields': [ 'source_object_code', 'master_object_name']
       },
       'link-entities': {
         'display_name': 'Link Entities',

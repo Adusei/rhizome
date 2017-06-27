@@ -65,6 +65,20 @@ var MapForm = React.createClass({
   },
 
   renderDropDown: function (content_type) {
+    var dropDownData = [{'id':'a','title':'a','value':'1'}]
+    // children: Array[4]
+    // grouped: false
+    // item_plural_name:"Indicators"
+    // items: Array[4]
+    // multi:false
+    // onSearch:fn()
+    // searchable: true
+    // sendValue: bound postMetaMap()
+    // text:"Map Indicator"
+    // title_field:"title"
+    // uniqueOnly: false
+    // value_field:"value"
+
     var defaultSelected = {'name': 'please map..'}
 
     function loadText (message) {
@@ -81,14 +95,14 @@ var MapForm = React.createClass({
         sendValue={this.postMetaMap}/></div>
     }
     if (content_type === 'indicator') {
-      if (!this.state.indicators.list) {
-        return loadText('Indicators')
-      }
+      // if (!this.state.indicators.list) {
+      //   return loadText('Indicators')
+      // }
       return <DropdownButton
-          items={this.state.indicators.list}
+          items={dropDownData}
           sendValue={this.postMetaMap}
-          item_plural_name='Indicators'
-          text='Map Indicator'
+          item_plural_name='---- TEST ----'
+          text='Map The Column'
           searchable/>
     }
     if (content_type === 'campaign') {

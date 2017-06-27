@@ -100,10 +100,7 @@ var SourceDataContainer = React.createClass({
     var reviewData = (
       <div>
         <div className='medium-12 columns upload__csv--load'>
-          Review Data
-        </div>
-        <div className='medium-12 columns upload__csv--step'>
-          You can review raw data, map indicators, validate data and view results.
+          Review Source Data
         </div>
         <div>
           <DocOverview
@@ -132,7 +129,11 @@ var SourceDataContainer = React.createClass({
               {review_table}
             </div>
           </div>
-        <div className='medium-1 columns'>&nbsp;</div>
+        <div className='medium-1 columns'>&nbsp;
+        <a disabled={this.state.isRefreshing} className='button button-refresh'
+         onClick={this.refreshMaster}> <i className='fa fa-refresh'></i>{ this.state.isRefreshing ? 'Refreshing' : ' Sync Data'}
+        </a>
+        </div>
       </div>
     )
   }
