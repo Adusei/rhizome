@@ -75,11 +75,6 @@ var IndicatorStore = Reflux.createStore({
   //                                   UTILITIES                                 //
   // =========================================================================== //
   processIndicators: function () {
-    console.log('processIndicators:')
-    console.log('processIndicators:')
-    console.log('processIndicators:')
-    console.log('processIndicators:')
-    console.log('processIndicators:')
     if (this.indicators.raw && this.indicators.tags) {
       this.indicators.tree = this.buildIndicatorsTree(this.indicators.raw, this.indicators.tags, true, true)
       this.indicators.list = _.sortBy(this.indicators.tree, 'title')

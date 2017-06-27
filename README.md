@@ -1,6 +1,11 @@
 # csv-uploader
 
 
+--- TO DO --
+
+1. Get INdicator Tree working
+2. Base Insert for Indicator tree in migration
+
 Document Tabs
  - view raw screen
     -> Row Number
@@ -40,7 +45,6 @@ How to get this done:
  - start to fill in the mocks with real stuff
 
 
-
 What i need to do :
  - Create all that stuff above
  - Prepare a Demo
@@ -52,7 +56,25 @@ What i need to do :
 Demo
  - Upload Fresh File
  - Upload File with another birth day
- -
+
+
+## Manage System
+  - Entities
+      {entity-name | entity-type | entity-uid}
+  - Attributes
+      {attribute-name | entity-type | data-type}
+  - Linking
+      {source-string | entity-id | entity-name}
+  - Column Mapping
+      {source-string | entity-or-attribute | object-id}
+
+## indicator tag insert
+
+
+---
+8:17 - ...
+
+
 
 
 ## Setting up the development environment with Docker #
