@@ -25,7 +25,7 @@ publish:
     image: nytimes/drone-gae
     action: deploy
     project: inspiring-cat-165403
-    flex_image: gcr.io/inspiring-cat-165403/rhizome:$$9f57fce07f5037c62e52f61c0ee268029d7f5394
+    flex_image: gcr.io/inspiring-cat-165403/rhizome:9f57fce07f5037c62e52f61c0ee268029d7f5394
     version: "june27"
     addl_flags:
      - --stop-previous-version
