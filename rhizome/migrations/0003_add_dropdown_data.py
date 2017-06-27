@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(cache_meta),
         migrations.RunSQL(
         """
         INSERT INTO indicator_tag
@@ -75,5 +74,6 @@ class Migration(migrations.Migration):
           ON ind.name = x.ind_name
         INNER JOIN indicator_tag tag
           ON tag.tag_name = x.tag_name;
-        """)
+        """),
+        migrations.RunPython(cache_meta)
     ]

@@ -73,53 +73,23 @@ var DocOverview = React.createClass({
   _download: function () {
     return api.submission.toString({'format': 'csv', 'document_id': this.props.doc_id})
   },
+  _sync_data: function () {
+    return api.submission.toString({'format': 'csv', 'document_id': this.props.doc_id})
+  },
 
   render () {
-    var doc_deets = this.state.doc_deets
-
-    if (!doc_deets) return this.renderLoading()
-
-    var rows = []
-
-    var odkRefreshBtn = <span>&nbsp;</span>
-
-    for (var i = 0; i < doc_deets.length; i++) {
-      var doc_detail = doc_deets[i]
-
-      if (doc_detail.doc_detail_type__name === 'odk_form_name') {
-        odkRefreshBtn = (
-          <a disabled={this.state.isFetchingOdk} className='button button-refresh large-3 medium-3 small-12 columns'
-             onClick={this.syncOdk}> { this.state.isFetchingOdk ? 'Refreshing' : 'Fetch ODK Data'}
-          </a>
-        )
-      }
-
-      rows.push(
-        <div className='large-6 medium-6 small-12 columns csv-upload__tags'>
-          <span className='csv-upload__tags--span'>{doc_detail.doc_detail_type__name}: </span>
-          {doc_detail.doc_detail_value}
-        </div>)
-    }
-
-    var buttonComponent = ''
-    if (this.props.doc_tabl === 'view_raw') {
-      buttonComponent = (
-          <a disabled={this.state.isRefreshing} className='button button-refresh'
-           onClick={this.refreshMaster}> <i className='fa fa-refresh'></i>{ this.state.isRefreshing ? 'Refreshing' : 'Transform Data'}
-          </a>
-      )
-    }
-
     var button_row = (
       <div className='row'>
-        <div className='medium-3 columns'>
-        {buttonComponent}
+      <div className='medium-3 columns'>
+      <a disabled={this.state.isRefreshing} className='button button-refresh'
+       onClick={this.refreshMaster}> <i className='fa fa-refresh'></i>{ this.state.isRefreshing ? 'Refreshing' : ' Sync Data'}
+      </a>
       </div>
         <div className='medium-3 columns'>
           <DownloadButton
             onClick={this._download}
             enable='true'
-          text='Download Raw'
+          text='Download Raw File'
           working='Downloading'
           cookieName='dataBrowserCsvDownload' />
         </div>
@@ -128,7 +98,6 @@ var DocOverview = React.createClass({
 
     return (
       <div className='row csv-upload__message'>
-        {rows}
         <div className='clearfix'></div>
         {button_row}
       </div>

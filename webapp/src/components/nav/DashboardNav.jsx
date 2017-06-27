@@ -27,7 +27,7 @@ let DashboardNav = React.createClass({
     return (
       <ul className='dashboards-nav'>
         <li>
-          <a href='/dashboards'>Dashboards</a>
+          <a href='/source-data'>Source Data</a>
           <ul className='dashboard-menu'>
           </ul>
         </li>

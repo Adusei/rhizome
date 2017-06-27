@@ -3,30 +3,17 @@
 
 --- TO DO --
 
-1. Get INdicator Tree working
-2. Base Insert for Indicator tree in migration
+Add Models:
+  - Entity
+  
+  - Attribute
+     [ entity-type | attribute-name | defined-entity ]
 
-Document Tabs
- - view raw screen
-    -> Row Number
-    -> Document Batch ID
-    -> view raw modal
- - Mapping Columns
-    -> Select from a tree view
-        - Entities
-            -> Person
-            -> Org
-        - Attributes
-            -> Entity Attributes
-                - Birthday
-                - Employment Start
-                - Employment End
 
- - Entities
+ - Link Entities
    Columns: [source string, entity type, master entity, synced ]
      - Page with "source" and "master"
      - If "master entity" is null, then the "link now" shows up
-     -
 
 - Errors
   Columns: [ Row Number, Value, Error Message]
@@ -39,18 +26,13 @@ Document Tabs
       -> Only show new Facts
       ->
 
-How to get this done:
- - Mock out all of the API calls
- - render the FE how you want it
- - start to fill in the mocks with real stuff
 
-
-What i need to do :
- - Create all that stuff above
- - Prepare a Demo
+What I need to do :
+ - Prepare Demo
  - Deploy
      -> template out a yaml with secrets in the build
      -> connect to cloud sql
+ - Fix Download CSV button
 
 
 Demo

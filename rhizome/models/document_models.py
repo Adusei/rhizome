@@ -225,10 +225,80 @@ class Document(models.Model):
 
         self.db_doc_deets = self.get_document_config()
 
-        self.refresh_submission_details()
-        # self.submissions_to_doc_datapoints()
-        # self.delete_unmapped()
-        # self.sync_datapoint()
+        self.sync_entity_data()
+
+
+    ### BEGIN ENTITY TRANSFORM ####
+
+    def sync_entity_data(self):
+        """
+        All this does, is queues up entities for linking.
+
+        Linking is done in the source_object_map table.
+
+from rhizome.models.document_models import *
+d = Document.objects.get(id=3)
+d.sync_entity_data()
+
+
+        """
+        import logging
+
+        from pprint import pprint
+
+        ## these are the attribuets that define an entity 1-1
+        identity_map = {
+            'Social Sec No': 'Person',
+            'EIN': 'Organization'
+        }
+
+        # find the columns that are mapped, and their corresponding attribute IDs
+        doc_map = self.get_document_meta_mappings() # {(u'indicator', u'soc-sec-no'): 3}
+
+        header_list = self.file_header.replace('\n','').split(",")
+
+        entity_column_lookup = {}
+
+        # out of those columns, find those that represent the identity of an entity
+        for tup, indicator_id in doc_map.iteritems():
+
+            content_type, column_header = tup[0], tup[1]
+            if content_type == 'indicator':
+                mapped_ind_name = Indicator.objects.get(id=indicator_id).name
+                entity_type = identity_map.get(mapped_ind_name)
+                if entity_type:
+                    entity_column_lookup[column_header] = entity_type
+
+        logging.warning('ENTITY COLUMN LOOKUP %s', entity_column_lookup)
+
+        # for each row, for the "identity" fieds, create a row in source_object_map
+        # where source_object_code == cell_value, content_type = 'entity' and
+        # master id is null.  Make sure not to duplicate
+
+        logging.warning('self.file_header %s ', self.file_header)
+        logging.warning('TYPE self.file_header %s ', type(self.file_header))
+
+        # pprint(identity_map)
+        # then get the json of all of the related submissions .
+        submission_qs = SourceSubmission.objects.filter(document_id=self.id)
+
+        for submission in submission_qs:
+
+            for column, entity_type in entity_column_lookup.iteritems():
+                proto_entity_string = submission.submission_json[column]
+                if proto_entity_string:
+                    som, created = SourceObjectMap.objects.get_or_create(
+                        content_type='entity',
+                        source_object_code = proto_entity_string,
+                        defaults={'master_object_id':-1}
+                    )
+
+                    logging.warning('CREATED: %s', created)
+                    logging.warning('SOM: %s', som)
+
+            # all_ss_ids.append(submission.id)
+
+    ### END ENTITY TRANSFORM ####
 
     def get_document_config(self):
         '''
@@ -291,149 +361,6 @@ class Document(models.Model):
         return source_map_dict
 
 
-    def delete_unmapped(self):
-        '''
-        if a user re-maps data, we need to delete the
-        old data and make way for the new
-        '''
-
-        from rhizome.models.datapoint_models import DataPoint
-
-        som_data = SourceObjectMap.objects.filter(master_object_id__gt=0,
-              id__in=DocumentSourceObjectMap.objects
-              .filter(document_id=self.id)
-              .values_list('source_object_map_id', flat=True))\
-              .values_list('content_type', 'master_object_id')
-
-        som_lookup = defaultdict(list)
-
-        for content_type, master_object_id in som_data:
-            som_lookup[content_type].append(master_object_id)
-
-        ## delete bad_indicator_data ##
-        DataPoint.objects.filter(
-            source_submission_id__document_id=self.id,
-        ).exclude(indicator_id__in=som_lookup['indicator']).delete()
-
-        ## delete bad_location_data ##
-        DataPoint.objects.filter(
-            source_submission_id__document_id=self.id,
-        ).exclude(location_id__in=som_lookup['location']).delete()
-
-    def refresh_submission_details(self):
-        '''
-        Based on new and existing mappings, upsert the cooresponding master_object_id_ids
-        and determine which rows are ready to process.. since we need a master_location
-        in order to have a successful submission this method helps
-        us filter the data that we need to process.
-        Would like to be more careful here about what i delete as most things wont be
-        touched when it comes to this re-processing, and thus the delete and re-insert
-        will be for not.. however the benefit is that it's a clean upsert.. dont have to
-        worry about old data that should have been blown away hanging around.
-        '''
-
-        ss_id_list_to_process, all_ss_ids = [], []
-
-        # find soure_submission_ids based of location_codes to process
-        # then get the json of all of the related submissions .
-        submission_qs = SourceSubmission.objects\
-            .filter(document_id=self.id)
-
-        for submission in submission_qs:
-            all_ss_ids.append(submission.id)
-
-            # location_id = submission.get_location_id()
-            #
-            # if location_id > 0:
-            #     ss_id_list_to_process.append(submission.id)
-            #     submission.location_id = location_id
-
-        if len(submission_qs) > 0:
-            bulk_update(submission_qs)
-
-        return ss_id_list_to_process, all_ss_ids
-
-    def submissions_to_doc_datapoints(self):
-        '''
-        Send all rows queued for processing to the process_source_submission method.
-        '''
-
-        self.source_map_dict = self.get_document_meta_mappings()
-
-        # ss_ids_in_batch = self.submission_data.keys()
-
-        for row in SourceSubmission.objects.filter(document_id=self.id):
-
-            # row.location_id = row.get_location_id()
-
-            # if no mapping location -- dont process
-            if not row.data_date:
-                row.process_status = 'missing data_date'
-            elif not row.location_id or row.location_id == -1:
-                row.process_status = 'missing location'
-            else:
-                doc_dps = self.process_source_submission(row)
-
-    def add_unique_index(self, x):
-
-        x['unique_index'] = str(x['location_id']) + '_' + str(
-            x['indicator_id']) + '_' + str(to_datetime(x['data_date'], utc=True))
-
-        return x
-
-    def filter_data_frame_conflicts(self, df):
-        '''
-        These are CONFLICTS and should be returned to the user.  For now,
-        we simply take the datapoint with the max soruce_submission_id
-        when there are two datapoints in one document for which exist the same
-        location, indicator.
-        '''
-
-        filtered_df = df.sort(['source_submission_id'], ascending=False)\
-            .groupby('unique_index').first().reset_index()
-
-        return filtered_df
-
-    def sync_datapoint(self, ss_id_list=None):
-
-        ## FIXME should import this once when we run `refresh_master`
-        ## but if i don't do it for each method there i get a NameError
-
-        from rhizome.models.datapoint_models import DataPoint, DocDataPoint
-
-        dp_batch = []
-        if not ss_id_list:
-            ss_id_list = SourceSubmission.objects\
-                .filter(document_id=self.id).values_list('id', flat=True)
-
-        doc_dp_df = DataFrame(list(DocDataPoint.objects.filter(
-            document_id=self.id).values()))
-
-        if len(doc_dp_df) == 0:
-            return
-
-        doc_dp_df = doc_dp_df.apply(self.add_unique_index, axis=1)
-        doc_dp_df = self.filter_data_frame_conflicts(doc_dp_df)
-
-        doc_dp_unique_keys = doc_dp_df['unique_index'].unique()
-
-        dp_ids_to_delete = DataPoint\
-            .objects.filter(unique_index__in=doc_dp_unique_keys)\
-            .values_list('id', flat=True)
-
-        for ix, row in doc_dp_df.iterrows():
-            dp_batch.append(DataPoint(**{
-                'indicator_id': row.indicator_id,
-                'location_id': row.location_id,
-                'data_date': row.data_date,
-                'value': row.value,
-                'unique_index': row.unique_index,
-                'source_submission_id': row.source_submission_id,
-            }))
-
-        DataPoint.objects.filter(id__in=dp_ids_to_delete).delete()
-        DataPoint.objects.bulk_create(dp_batch)
-
     def process_source_submission(self, row):
         from rhizome.models.datapoint_models import DocDataPoint
 
@@ -456,50 +383,6 @@ class Document(models.Model):
 
         return x
 
-    def source_submission_cell_to_doc_datapoint(self, row, indicator_string,
-                                                value, data_date):
-        '''
-        This method prepares a batch insert into docdatapoint by creating a list of
-        docdatapoint objects.  The Database handles all docdatapoitns in a submission
-        row at once in process_source_submission.
-        '''
-
-        from rhizome.models.datapoint_models import DocDataPoint
-
-        ## if no indicator row dont process ##
-        try:
-            indicator_id = self.source_map_dict[
-                ('indicator', indicator_string)]
-        except KeyError:
-            return None
-
-        cleaned_val = None
-
-        try:
-            cleaned_val = self.clean_val(value)
-        except ValueError:
-            return None
-
-        if not cleaned_val == None: #FIXME sloppy syntax
-            doc_dp = DocDataPoint(**{
-                'indicator_id':  indicator_id,
-                'value': cleaned_val,
-                'location_id': row.location_id,
-                'data_date': data_date,
-                'document_id': self.id,
-                'source_submission_id': row.id,
-            })
-            return doc_dp
-        else:
-            return None
-
-    def clean_val(self, val):
-        '''
-        This needs alot of work but basically determines if a particular submission
-        cell is alllowed.
-        '''
-
-        return float(val)
 
 class SourceObjectMap(models.Model):
     # FIXME -> need to check what would be foreign keys

@@ -28,15 +28,4 @@ class RefreshMasterResource(BaseNonModelResource):
         document_object = Document.objects.get(id = doc_id)
         document_object.refresh_master()
 
-        if Document.objects.get(id = doc_id).file_type == 'campaign':
-            ## check document object map first to make query faster ##
-            # DocumentObjectMap.objects.filter(document_id = doc_id,\
-            # content_type = 'document').values_list('master_object_id,flat=True')
-            doc_campaign_ids = set(list(DataPoint.objects
-                            .filter(source_submission__document_id=doc_id)
-                            .values_list('campaign_id', flat=True)))
-            for c_id in doc_campaign_ids:
-                campaign_object = Campaign.objects.get(id = c_id)
-                campaign_object.aggregate_and_calculate()
-
         return Document.objects.filter(id=doc_id).values()

@@ -100,7 +100,7 @@ var DocForm = React.createClass({
   render: function () {
     var fileConfigForm = ''
     var syncUploadButton = <a disabled={this.state.isRefreshing} className='button button-refresh'
-       onClick={this.syncDocData}> <i className='fa fa-refresh'></i>{ this.state.isRefreshing ? ' ' : 'Sync Data'}
+       onClick={this.syncDocData}> <i className='fa fa-refresh'></i>{ this.state.isRefreshing ? ' ' : 'Manage This Upload'}
     </a>
 
     let uploadButton = ''
