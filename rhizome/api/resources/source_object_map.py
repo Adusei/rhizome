@@ -45,14 +45,4 @@ class SourceObjectMapResource(BaseModelResource):
                 values_list('source_object_map_id', flat=True)
         applicable_filters['id__in'] = som_ids_for_document
 
-        ## get the is_mapped filter, if not passed we name this var show_all
-        ## because that is the behavior that we execute when there is no param
-        is_mapped = filters.get('is_mapped', 'show_all')
-        if is_mapped == '0':
-            applicable_filters['master_object_id'] = -1
-        elif is_mapped == '1':
-            applicable_filters['master_object_id__gt'] = 0
-        else:
-            pass
-
         return self.get_object_list(request).filter(**applicable_filters)
