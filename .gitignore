@@ -55,3 +55,4 @@ node_modules/
 static
 .drone.sec.yaml
 .env
+source-files
