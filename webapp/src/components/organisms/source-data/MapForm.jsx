@@ -65,7 +65,15 @@ var MapForm = React.createClass({
   },
 
   renderDropDown: function (content_type) {
-    var dropDownData = [{'id':'a','title':'a','value':'1'}]
+    // var dropDownData = [
+    //   {'id':'a','title':'Entities','value':'1',
+    //     'children': [
+    //       'id':'person','title':'Person','value':'person',
+    //       'id':'org','title':'Organization','value':'Organization',
+    //     ]
+    //   }
+    // ]
+
     // children: Array[4]
     // grouped: false
     // item_plural_name:"Indicators"
@@ -95,11 +103,11 @@ var MapForm = React.createClass({
         sendValue={this.postMetaMap}/></div>
     }
     if (content_type === 'indicator') {
-      // if (!this.state.indicators.list) {
-      //   return loadText('Indicators')
-      // }
+      if (!this.state.indicators.list) {
+        return loadText('Indicators')
+      }
       return <DropdownButton
-          items={dropDownData}
+          items={this.state.indicators.list}
           sendValue={this.postMetaMap}
           item_plural_name='---- TEST ----'
           text='Map The Column'

@@ -8,9 +8,10 @@ import AdminApp from 'containers/AdminApp'
 
 Reflux.use(RefluxPromise(window.Promise))
 
-// React.render(React.createElement(require('components/nav/DashboardNav')), document.getElementById('dashboards-nav'))
+React.render(React.createElement(require('components/nav/DashboardNav')), document.getElementById('dashboards-nav'))
 
 const Rhizome = window.Rhizome = {
+
   SourceData: function (el) {
     React.render(React.createElement(require('containers/SourceDataContainer')), el)
     // SourceDataApp.render(document.getElementById('main'))
