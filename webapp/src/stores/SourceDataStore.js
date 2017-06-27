@@ -45,9 +45,9 @@ var SourceDataStore = Reflux.createStore({
     return {
       'viewraw': {
         'data_fn': api.submission,
-        'fields': ['id', 'location_code', 'campaign_code', 'data_date', 'edit_link'],
-        'header': ['id', 'location_code', 'campaign_code', 'data_date', 'edit_link'],
-        'search_fields': ['id', 'location_code', 'campaign_code']
+        'fields': ['id', 'row_number','document_batch', 'data_date', 'edit_link'],
+        'header': ['id', 'row_number','document_batch', 'data_date', 'edit_link'],
+        'search_fields': ['id', 'row_number','document_batch', 'data_date']
       },
       'doc_index': {
         'data_fn': api.source_doc,

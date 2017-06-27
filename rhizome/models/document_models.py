@@ -209,11 +209,9 @@ class Document(models.Model):
             'document_id': self.id,
             'data_date': '2017-01-01', ##parse(submission_data[self.date_column]),
             'row_number': row_num,
-            'latitude': 0, ##submission_data[self.lat_column] or 0, #FIXME make nullable in model
-            'longitude': 0, ## submission_data[self.lon_column] or 0,  #FIXME make nullable in model
-            'location_code': 'x', # submission_data[self.location_column],
             'instance_guid': row_num,
             'process_status': 'TO_PROCESS',
+            'document_batch': 1
         }
 
         return submission_dict, submission_ix
@@ -569,13 +567,10 @@ class DocumentDetail(models.Model):
 class SourceSubmission(models.Model):
 
     document = models.ForeignKey(Document)
+    document_batch = models.IntegerField()
     instance_guid = models.CharField(max_length=255)
     row_number = models.IntegerField()
     data_date = models.DateTimeField(null=True)
-    location_code = models.CharField(max_length=1000)
-    latitude = models.FloatField(null=True)
-    longitude = models.FloatField(null=True)
-    location_display = models.CharField(max_length=1000)
     submission_json = JSONField()
     created_at = models.DateTimeField(auto_now=True)
     process_status = models.CharField(max_length=25)  # should be a FK
@@ -583,16 +578,6 @@ class SourceSubmission(models.Model):
     class Meta:
         db_table = 'source_submission'
         unique_together = (('document', 'instance_guid'))
-
-    # def get_location_id(self):
-    #
-    #     try:
-    #         l_id = SourceObjectMap.objects.get(content_type='location',
-    #                source_object_code=self.location_code).master_object_id
-    #     except SourceObjectMap.DoesNotExist:
-    #         l_id = None
-    #
-    #     return l_id
 
 # Exceptions #
 class BadFileHeaderException(Exception):

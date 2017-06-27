@@ -18,7 +18,7 @@ publish:
        $$GOOGLE_CREDENTIALS
     when:
       event: push
-
+      branch: master
 # deploy:
   gae:
     image: nytimes/drone-gae
@@ -32,3 +32,4 @@ publish:
       $$GOOGLE_CREDENTIALS
     when:
       event: push
+      branch: master

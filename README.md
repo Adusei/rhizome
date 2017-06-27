@@ -3,6 +3,7 @@
 
 Document Tabs
  - view raw screen
+    -> Row Number
     -> Document Batch ID
     -> view raw modal
  - Mapping Columns
