@@ -22,6 +22,8 @@ from jsonfield import JSONField
 from rhizome.models.location_models import Location
 from rhizome.models.indicator_models import Indicator
 
+import logging
+
 class Document(models.Model):
     '''
     '''
@@ -59,34 +61,34 @@ class Document(models.Model):
 
         ## FIXME - pull these from document detail as the user should be
         ## allowed to set these column configurations
-        self.location_column, self.uq_id_column, self.date_column, \
-        self.lat_column, self.lon_column = \
-            ['city', 'unique_key', 'data_date', 'latitude', 'longitude']
+        # self.location_column, self.uq_id_column, self.date_column, \
+        # self.lat_column, self.lon_column = \
+        #     ['city', 'unique_key', 'data_date', 'latitude', 'longitude']
 
         raw_csv_df = read_csv(settings.MEDIA_ROOT + str(self.docfile))
 
         csv_df = raw_csv_df.where((notnull(raw_csv_df)), None)
         # if there is no uq id column -- make one #
-        if self.uq_id_column not in raw_csv_df.columns:
-
-            try:
-                csv_df[self.uq_id_column] = csv_df[self.location_column].map(
-                    str)
-            except Exception as err: ## FIXME # clean this
-                if self.date_column not in csv_df.columns:
-                    error_message = '%s is a required column.' % err.message
-                    raise Exception(error_message)
+        # if self.uq_id_column not in raw_csv_df.columns:
+        #
+        #     try:
+        #         csv_df[self.uq_id_column] = csv_df[self.location_column].map(
+        #             str)
+        #     except Exception as err: ## FIXME # clean this
+        #         if self.date_column not in csv_df.columns:
+        #             error_message = '%s is a required column.' % err.message
+        #             raise Exception(error_message)
 
         self.csv_df = csv_df
         self.file_header = csv_df.columns
 
-        self.meta_lookup = {
-            'location': {},
-            'indicator': {}
-        }
-        self.indicator_ids_to_exclude = set([-1])
-        self.existing_submission_keys = SourceSubmission.objects.filter(
-            document_id=self.id).values_list('instance_guid', flat=True)
+        # self.meta_lookup = {
+        #     'location': {},
+        #     'indicator': {}
+        # }
+        # self.indicator_ids_to_exclude = set([-1])
+        # self.existing_submission_keys = SourceSubmission.objects.filter(
+        #     document_id=self.id).values_list('instance_guid', flat=True)
 
     def process_file(self):
         '''
@@ -104,16 +106,17 @@ class Document(models.Model):
 
         batch = {}
 
-        for submission in self.csv_df.itertuples():
+        for i, (submission) in enumerate(self.csv_df.itertuples()):
 
             try:
-                ss, instance_guid = self.process_raw_source_submission(submission)
+                ss, instance_guid = self.process_raw_source_submission(submission, i)
             except Exception as err:
-                logging.warning(err.args)
+                raise
+                # logging.warning(err.args)
 
-            if ss is not None and instance_guid is not None:
-                ss['instance_guid'] = instance_guid
-                batch[instance_guid] = ss
+            # if ss is not None and instance_guid is not None:
+            ss['instance_guid'] = instance_guid
+            batch[instance_guid] = ss
 
         object_list = [SourceSubmission(**v) for k, v in batch.iteritems()]
         ss = SourceSubmission.objects.bulk_create(object_list)
@@ -143,7 +146,7 @@ class Document(models.Model):
 
         for row in source_dp_json:
             row_dict = json.loads(row[0])
-            rg_codes.append(row_dict[self.location_column])
+            # rg_codes.append(row_dict[self.location_column])
 
         for r in list(set(rg_codes)):
             all_codes.append(('location', r))
@@ -191,29 +194,29 @@ class Document(models.Model):
             dsom_to_insert)
 
 
-    def process_raw_source_submission(self, submission):
+    def process_raw_source_submission(self, submission, row_num):
 
         submission_ix, submission_data = submission[0], submission[1:]
 
         submission_data = dict(zip(self.file_header, submission_data))
-        instance_guid = submission_data[self.uq_id_column]
+        # instance_guid = submission_data[self.uq_id_column]
 
-        if instance_guid == '' or instance_guid in self.existing_submission_keys:
-            return None, None
+        # if instance_guid == '' or instance_guid in self.existing_submission_keys:
+        #     return None, None
 
         submission_dict = {
             'submission_json': submission_data,
             'document_id': self.id,
-            'data_date': parse(submission_data[self.date_column]),
-            'row_number': submission_ix,
-            'latitude': submission_data[self.lat_column] or 0, #FIXME make nullable in model
-            'longitude': submission_data[self.lon_column] or 0,  #FIXME make nullable in model
-            'location_code': submission_data[self.location_column],
-            'instance_guid': submission_data[self.uq_id_column],
+            'data_date': '2017-01-01', ##parse(submission_data[self.date_column]),
+            'row_number': row_num,
+            'latitude': 0, ##submission_data[self.lat_column] or 0, #FIXME make nullable in model
+            'longitude': 0, ## submission_data[self.lon_column] or 0,  #FIXME make nullable in model
+            'location_code': 'x', # submission_data[self.location_column],
+            'instance_guid': row_num,
             'process_status': 'TO_PROCESS',
         }
 
-        return submission_dict, instance_guid
+        return submission_dict, submission_ix
 
 
     #############################
@@ -225,9 +228,9 @@ class Document(models.Model):
         self.db_doc_deets = self.get_document_config()
 
         self.refresh_submission_details()
-        self.submissions_to_doc_datapoints()
-        self.delete_unmapped()
-        self.sync_datapoint()
+        # self.submissions_to_doc_datapoints()
+        # self.delete_unmapped()
+        # self.sync_datapoint()
 
     def get_document_config(self):
         '''
@@ -341,11 +344,11 @@ class Document(models.Model):
         for submission in submission_qs:
             all_ss_ids.append(submission.id)
 
-            location_id = submission.get_location_id()
-
-            if location_id > 0:
-                ss_id_list_to_process.append(submission.id)
-                submission.location_id = location_id
+            # location_id = submission.get_location_id()
+            #
+            # if location_id > 0:
+            #     ss_id_list_to_process.append(submission.id)
+            #     submission.location_id = location_id
 
         if len(submission_qs) > 0:
             bulk_update(submission_qs)
@@ -363,7 +366,7 @@ class Document(models.Model):
 
         for row in SourceSubmission.objects.filter(document_id=self.id):
 
-            row.location_id = row.get_location_id()
+            # row.location_id = row.get_location_id()
 
             # if no mapping location -- dont process
             if not row.data_date:
@@ -581,15 +584,15 @@ class SourceSubmission(models.Model):
         db_table = 'source_submission'
         unique_together = (('document', 'instance_guid'))
 
-    def get_location_id(self):
-
-        try:
-            l_id = SourceObjectMap.objects.get(content_type='location',
-                   source_object_code=self.location_code).master_object_id
-        except SourceObjectMap.DoesNotExist:
-            l_id = None
-
-        return l_id
+    # def get_location_id(self):
+    #
+    #     try:
+    #         l_id = SourceObjectMap.objects.get(content_type='location',
+    #                source_object_code=self.location_code).master_object_id
+    #     except SourceObjectMap.DoesNotExist:
+    #         l_id = None
+    #
+    #     return l_id
 
 # Exceptions #
 class BadFileHeaderException(Exception):
