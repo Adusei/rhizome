@@ -41,9 +41,11 @@ How to get this done:
 
 
 What i need to do :
- - Deploy
  - Create all that stuff above
  - Prepare a Demo
+ - Deploy
+     -> template out a yaml with secrets in the build
+     -> connect to cloud sql
 
 
 Demo
