@@ -13,3 +13,5 @@ RUN pip install --requirement /tmp/requirements.txt
 RUN ln -s /usr/bin/gcc-5.3.0-r0 /usr/bin/gcc
 
 WORKDIR '/rhizome'
+
+EXPOSE 8080

@@ -1,20 +1,64 @@
-# Rhizome
-Designed for data visualization to help eradicate polio!
+# csv-uploader
 
-Built with Python, Django, JavaScript, React, Reflux, HighCharts, and many other libraries.
+
+Document Tabs
+ - view raw screen
+    -> Document Batch ID
+    -> view raw modal
+ - Mapping Columns
+    -> Select from a tree view
+        - Entities
+            -> Person
+            -> Org
+        - Attributes
+            -> Entity Attributes
+                - Birthday
+                - Employment Start
+                - Employment End
+
+ - Entities
+   Columns: [source string, entity type, master entity, synced ]
+     - Page with "source" and "master"
+     - If "master entity" is null, then the "link now" shows up
+     -
+
+- Errors
+  Columns: [ Row Number, Value, Error Message]
+
+ - Facts ( proto Schema )
+    Columns: [string] [attr-type] [old-value] [new-value]  [synced]
+             [ John ] | bday | null | 11/12/87 | not-synced  
+             | John @ Nytimes | start date | null | 12/11/1987 | not-synced
+
+      -> Only show new Facts
+      ->
+
+How to get this done:
+ - Mock out all of the API calls
+ - render the FE how you want it
+ - start to fill in the mocks with real stuff
+
+
+
+What i need to do :
+ - Deploy
+ - Create all that stuff above
+ - Prepare a Demo
+
+
+Demo
+ - Upload Fresh File
+ - Upload File with another birth day
+ -
+
 
 ## Setting up the development environment with Docker #
-
-Download: ["Docker for Mac"](https://docs.docker.com/engine/installation/mac/) or with [Docker Toolbox](https://www.docker.com/products/docker-toolbox) and [VirtualBox](http://download.virtualbox.org/virtualbox/5.0.26/VirtualBox-5.0.26-108824-OSX.dmg)
-
 
 Copy the base config to your .env and adjust any necessary passwords and keys
 `$ cp .env-example .env`
 
 Build and run the project
 `$ docker-compose build && docker-compose up`
-
-
 
 ## Helpful Commands
 
@@ -50,28 +94,3 @@ To enter into the gulp watcher..
 ```
 $ docker exec -it rhizome_fe_1 sh
 ```
-
-
-If either of these commands do not work, then please ensure you have the proper `node` and `npm` versions installed.
-
-# Serving the Django Application with Apache.
-
-Make sure that Apache is configured to use the
-[prefork MPM](https://httpd.apache.org/docs/2.4/mpm.html); the worker and event
-MPMs result in incorrect responses returned for requests when multiple requests
-are made to the server.
-
-```
-sudo apt-get install apache2-mpm-prefork
-```
-
-See more [here](http://codebucket.co.in/apache-prefork-mpm-configuration/)
-
-For more information on deploying [Django][] applications, see the
-[Django documentation](https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/).
-
-# Documentation
-Start here by checking out our [documentation](http://unicef.github.io/rhizome/).
-
-# Style
-For python style guide and instructions on how to configure your editor in alignment with our linter config see the [plylintrc file](https://github.com/unicef/rhizome/blob/dev/rhizome/pylintrc)

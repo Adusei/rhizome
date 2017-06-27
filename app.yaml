@@ -1,6 +1,6 @@
 runtime: python
 env: flex
-entrypoint: gunicorn -b :9090 rhizome.wsgi
+entrypoint: gunicorn -b :8080 rhizome.wsgi
 
 runtime_config:
   python_version: 2
