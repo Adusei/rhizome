@@ -26,7 +26,7 @@ class SourceObjectMapResource(BaseModelResource):
         required_fields_for_post = ['id'] #['source_object_code', 'content_type']
         # bring back when REST resource fetch is handled properly in FE
         # GET_params_required = ['document_id'] FE
-        filtering = {'content_type': ALL}
+        filtering = {'id': ALL, 'content_type': ALL}
 
     def apply_filters(self, request, applicable_filters):
         """

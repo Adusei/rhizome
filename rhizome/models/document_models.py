@@ -253,7 +253,10 @@ class Document(models.Model):
         # find the columns that are mapped, and their corresponding attribute IDs
         doc_map = self.get_document_meta_mappings() # {(u'indicator', u'soc-sec-no'): 3}
 
-        header_list = self.file_header.replace('\n','').split(",")
+        # header_list = self.document.file_header.replace('\n','').split(",")
+        # header_list = self.file_header.split(',')
+        first_submission = SourceSubmission.objects.filter(document_id=self.id)[0].submission_json
+        header_list = [k for k,v in first_submission.iteritems()]
 
         entity_column_lookup = {}
 
@@ -278,7 +281,7 @@ class Document(models.Model):
         for submission in submission_qs:
 
             for column, entity_type in entity_column_lookup.iteritems():
-                proto_entity_string = submission.submission_json[column]
+                proto_entity_string = submission.submission_json.get(column)
                 if proto_entity_string:
                     som, created = SourceObjectMap.objects.get_or_create(
                         content_type='entity',

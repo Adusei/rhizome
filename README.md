@@ -5,7 +5,7 @@
 
 Add Models:
   - Entity
-  
+
   - Attribute
      [ entity-type | attribute-name | defined-entity ]
 
@@ -28,6 +28,11 @@ Add Models:
 
 
 What I need to do :
+ ~~~~
+ - Set up Linking
+ - Set up the Syncing of Entity Attribuets
+ - Set up the Abilty to create relationships
+ ~~~~
  - Prepare Demo
  - Deploy
      -> template out a yaml with secrets in the build
@@ -37,7 +42,17 @@ What I need to do :
 
 Demo
  - Upload Fresh File
- - Upload File with another birth day
+    -> Map the Social Sec No Column
+    -> Sync, show entities queued for Linking
+    -> Link an Entity by "creating new"
+ - Upload Another File with A different Social Security Number column
+    -> Map that column,
+    -> Sync and show entities
+    -> Map the EIN
+    -> Map the remaining columns
+    -> Sync and see all facts in final tab.
+ - Upload File with updated data ( bday, is_active etc. )
+    -> Show how syncing over-rides the data.
 
 
 ## Manage System

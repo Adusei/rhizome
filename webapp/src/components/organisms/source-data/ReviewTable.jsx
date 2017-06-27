@@ -83,6 +83,10 @@ var ReviewTable = React.createClass({
             return <MapForm
               source_object_map_id={id}
               onModalClose={this._callApi}/>
+          } else if (this.props.doc_tab === 'link-entities') {
+            return <MapForm
+              source_object_map_id={id}
+              onModalClose={this._callApi}/>
           }
         }
       }

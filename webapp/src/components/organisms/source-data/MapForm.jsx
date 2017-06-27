@@ -65,27 +65,6 @@ var MapForm = React.createClass({
   },
 
   renderDropDown: function (content_type) {
-    // var dropDownData = [
-    //   {'id':'a','title':'Entities','value':'1',
-    //     'children': [
-    //       'id':'person','title':'Person','value':'person',
-    //       'id':'org','title':'Organization','value':'Organization',
-    //     ]
-    //   }
-    // ]
-
-    // children: Array[4]
-    // grouped: false
-    // item_plural_name:"Indicators"
-    // items: Array[4]
-    // multi:false
-    // onSearch:fn()
-    // searchable: true
-    // sendValue: bound postMetaMap()
-    // text:"Map Indicator"
-    // title_field:"title"
-    // uniqueOnly: false
-    // value_field:"value"
 
     var defaultSelected = {'name': 'please map..'}
 
@@ -93,38 +72,27 @@ var MapForm = React.createClass({
       return <div className='csv-upload__loading'><i className='fa fa-spinner fa-spin' />&nbsp;Loading {message}...</div>
     }
 
-    if (content_type === 'location') {
-      if (!this.state.locations.index) {
-        return loadText('Locations')
-      }
-      return <div><LocationSelect
-        locations={_.toArray(this.state.locations.index)}
-        selected={defaultSelected}
-        sendValue={this.postMetaMap}/></div>
-    }
-    if (content_type === 'indicator') {
+    if (content_type === 'entity') {
       if (!this.state.indicators.list) {
         return loadText('Indicators')
       }
       return <DropdownButton
           items={this.state.indicators.list}
           sendValue={this.postMetaMap}
-          item_plural_name='---- TEST ----'
+          item_plural_name='Columns'
           text='Map The Column'
           searchable/>
     }
-    if (content_type === 'campaign') {
-      if (!this.state.campaigns.list) {
-        return loadText('Campaigns')
+    if (content_type === 'indicator') {
+      if (!this.state.indicators.list) {
+        return loadText('Indicators')
+        console.log('THIS DOT STATE: ', this.state);
       }
-
       return <DropdownButton
-          items={this.state.campaigns.list}
-          value_field='id'
-          title_field='name'
+          items={this.state.indicators.list}
           sendValue={this.postMetaMap}
-          item_plural_name='Campaigns'
-          text='Map Campaign'
+          item_plural_name='Columns'
+          text='Map The Column'
           searchable/>
     }
   },
