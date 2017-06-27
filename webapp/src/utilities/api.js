@@ -387,6 +387,9 @@ export default {
   docMapped: docMapped,
   docToMap: docToMap,
 
+  // june-27 //
+  docError: endPoint('/document_error/', 'get', 1),
+
   // BASIC GET REQUESTS //
   campaign: endPoint('/campaign/', 'get', 1),
   campaign_type: endPoint('/campaign_type/', 'get', 1),

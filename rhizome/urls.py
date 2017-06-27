@@ -23,6 +23,7 @@ admin.autodiscover()
 
 v1_api = Api(api_name='v1')
 
+v1_api.register(document_errors.DocErrorResource())
 v1_api.register(doc_datapoint.DocDataPointResource())
 v1_api.register(doc_detail_type.DocDetailTypeResource())
 v1_api.register(doc_trans_form.DocTransFormResource())

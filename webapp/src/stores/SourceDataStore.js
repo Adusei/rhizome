@@ -43,44 +43,44 @@ var SourceDataStore = Reflux.createStore({
     var self = this
 
     return {
-      'viewraw': {
-        'data_fn': api.submission,
-        'fields': ['id', 'row_number','document_batch', 'data_date', 'edit_link'],
-        'header': ['id', 'row_number','document_batch', 'data_date', 'edit_link'],
-        'search_fields': ['id', 'row_number','document_batch', 'data_date']
-      },
       'doc_index': {
         'data_fn': api.source_doc,
         'fields': ['id', 'doc_title','file_type', 'created_at', 'edit_link'],
         'header': ['id', 'doc_title','file_type', 'created_at', 'edit_link'],
         'search_fields': ['id', 'doc_title']
       },
-      'mapped': {
-        'display_name': 'Meta Data ( Mapped )',
+      'viewraw': {
+        'data_fn': api.submission,
+        'fields': ['id', 'row_number','document_batch', 'data_date', 'edit_link'],
+        'header': ['id', 'row_number','document_batch', 'data_date', 'edit_link'],
+        'search_fields': ['id', 'row_number','document_batch', 'data_date']
+      },
+      'map-columns': {
+        'display_name': 'Map Columns',
+        'data_fn': api.docToMap,
+        'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
+        'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
+        'search_fields': ['content_type', 'source_object_code', 'master_object_name']
+      },
+      'link-entities': {
+        'display_name': 'Link Entities',
         'data_fn': api.docMapped,
         'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
         'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
         'search_fields': ['content_type', 'source_object_code', 'master_object_name']
       },
-      'un-mapped': {
-        'display_name': 'Meta Data ( Mapped )',
-        'data_fn': api.docToMap,
-        'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-        'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-        'search_fields': ['content_type', 'source_object_code', 'master_object_name']
+      'errors': {
+        'data_fn': api.docError,
+        'fields': ['row_number', 'file_header', 'cell_value', 'error_msg', 'edit_link'],
+        'header': ['row_number', 'file_header', 'cell_value', 'error_msg', 'edit_link'],
+        'search_fields': ['row_number', 'cell_value', 'error_msg']
       },
-      'date_results': {
+      'facts': {
         'data_fn': api.dateDocResults,
         'fields': ['indicator__id', 'indicator__short_name', 'location__name', 'data_date', 'value'],
         'fields': ['indicator__id', 'indicator__short_name', 'location__name', 'data_date', 'value'],
         'search_fields': ['indicator_id', 'indicator__short_name', 'location__name', 'campaign__name']
       },
-      'errors': {
-        'data_fn': api.docToMap,
-        'fields': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-        'header': ['content_type', 'source_object_code', 'master_object_name', 'edit_link'],
-        'search_fields': ['content_type', 'source_object_code', 'master_object_name']
-      }
     }
   }
 })
